@@ -1,150 +1,121 @@
 // ===================================================
-// SHORT COMMAND ALIASES - คำสั่งย่อ
-// ===================================================
-// ไฟล์นี้รวมคำสั่งย่อทั้งหมดเพื่อให้เขียนโค้ดได้กระชับขึ้น
-// ใช้แทนคำสั่งเต็มได้เลย เช่น TC(60,1000) แทน TracSpeedTime(60,1000)
+// SHORT COMMAND ALIASES (NEW TracJC VERSION)
+// รองรับ Trac ใหม่ทั้งหมด ไม่มีของ legacy
 // ===================================================
 
-// ----- คำสั่งย่อที่มีอยู่แล้ว (Existing Short Commands) -----
+/**************** LINE TRACK ****************/
 
-void TJCSS(int line) // TracJCSpeed + TracJC
+void TJ() { TracJC(); }
+void TJSP() { TracFast(); }
+void TJSL() { TracSlow(); }
+void TJL() { TracJCL(); }
+void TJR() { TracJCR(); }
+// void TJLR() { TracJCR(); }
+
+// void TC(int s, int t) { TracTime(s, t); }
+// void TCB(int s, int t) { TracSpeedTimeBack(s, t); }
+void TJSPL(int n) { TracJC_Line(n); }
+void TJST(int s, int t) { TracJCSpeedTime(s, t); }
+
+/**************** COMBO ****************/
+
+void TJCSS(int n)
 {
-    for (int i = 0; i < line; i++)
+    for (int i = 0; i < n; i++)
     {
-        TracJCSpeed();
+        fline4sensor(40, 40, 1.25, "a07", 'f', 'p', 90, "a0", 1);
     }
-    TracJC();
-    AO();
+    fline4sensor(25, 25, 1.2, "a07", 'f', 's', 90, "a0", 1);
+    MotorStop();
 }
-void TJCSS() { TJCSS(1); }
 
-void TJCSSL(int line) // TracJCSpeed + TracJCSlow
+void TJCSSL(int n = 1)
 {
-    for (int i = 0; i < line; i++)
-    {
-        TracJCSpeed();
-    }
-    TracJCSlow();
-    AO();
-}
-void TJCSSL() { TJCSSL(1); }
-
-void TJCSSL2(int line) // TracJC + TracJCSlow
-{
-    for (int i = 0; i < line; i++)
-    {
-        TracJC();
-    }
-    TracJCSlow();
-    AO();
-}
-void TJCSSL2() { TJCSSL2(1); }
-
-void TJCSSA(int line, int Tracs) // TracJCSpeed + TracJC (กำหนดจำนวน)
-{
-    for (int i = 0; i < line; i++)
-    {
-        TracJCSpeed();
-    }
-    for (int a = 0; a < Tracs; a++)
-    {
-        TracJC();
-    }
+    for (int i = 0; i < n; i++)
+        TracFast();
+    TracSlow();
     AO();
 }
 
-void TJCSSB(int line, int Tracc) // TracJCSpeed + TracJCSlow (กำหนดจำนวน)
+void TJCSSL2(int n = 1)
 {
-    for (int i = 0; i < line; i++)
-    {
-        TracJCSpeed();
-    }
-    for (int a = 0; a < Tracc; a++)
-    {
-        TracJCSlow();
-    }
+    for (int i = 0; i < n; i++)
+        TracJC();
+    TracSlow();
     AO();
 }
 
-// ===================================================
-// คำสั่งย่อใหม่ (New Short Command Aliases)
-// ===================================================
-
-// ----- เดินตามเส้น (Line Tracking) -----
-void TC(int s, int t) { TracSpeedTime(s, t); } // TC = TracSpeedTime(speed, time)
-void PA(int Num)
-{ //  PA = pharmacy ใช้ข้ามเส้นทางเภสัชศาสตรืป้องกันหลุด
-    switch (Num)
-    {
-    case 1:
+void TJCSSA(int fast, int normal)
+{
+    for (int i = 0; i < fast; i++)
+        TracFast();
+    for (int i = 0; i < normal; i++)
         TracJC();
-        TracJCSlow();
-        break;
-
-    case 2:
-        TracJCSlow();
-        TracJC();
-        break;
-
-    default:
-        TracJC();
-        TracJCSlow();
-        break;
-    }
+    AO();
 }
-void TCB(int s, int t) { TracSpeedTimeBack(s, t); } // TCB = TracSpeedTimeBack(speed, time)
-void TJ() { TracJC(); }                             // TJ = TracJC
-void TJS() { TracJCStop(); }                        // TJS = TracJCStop
-void TJSP() { TracJCSpeed(); }                      // TJSP = TracJCSpeed
-void TJSL() { TracJCSlow(); }                       // TJSL = TracJCSlow
-void TJL() { TracJCLeft(); }                        // TJL = TracJCLeft
-void TJR() { TracJCRight(); }                       // TJR = TracJCRight
-void TJLR() { TracJCLorR(); }                       // TJLR = TracJCLorR
-void TJSPL(int n) { TracJCSpeedLine(n); }           // TJSPL = TracJCSpeedLine(line)
-void TJST(int s, int t) { TracJCSpeedTime(s, t); }  // TJST = TracJCSpeedTime(speed, time)
 
-// ----- เดินตามเส้นถอยหลัง (Backward Line Tracking) -----
-void TJB() { TracJCBack(); }                            // TJB = TracJCBack
-void TJSB() { TracJCStopBack(); }                       // TJSB = TracJCStopBack
-void TJSPB() { TracJCSpeedBack(); }                     // TJSPB = TracJCSpeedBack
-void TJSTB(int s, int t) { TracJCSpeedTimeBack(s, t); } // TJSTB = TracJCSpeedTimeBack(speed, time)
+void TJCSSB(int fast, int slow)
+{
+    for (int i = 0; i < fast; i++)
+        TracFast();
+    for (int i = 0; i < slow; i++)
+        TracSlow();
+    AO();
+}
 
-// ----- เดินหน้า/ถอยหลัง (Forward/Backward) -----
-void FD() { Forward(); }                            // FD = Forward
-void FDD(int t) { ForwardDelay(t); }                // FDD = ForwardDelay(time)
-void FST(int s, int t) { ForwardSpeedTime(s, t); }  // FST = ForwardSpeedTime(speed, time)
-void FSD(int t) { ForwardSpeedDelay(t); }           // FSD = ForwardSpeedDelay(time)
-void BK() { Backward(); }                           // BK = Backward
-void BKD(int t) { BackwardDelay(t); }               // BKD = BackwardDelay(time)
-void BST(int s, int t) { BackwardSpeedTime(s, t); } // BST = BackwardSpeedTime(speed, time)
-void FJS() { ForwardJCStop(); }                     // FJS = ForwardJCStop
-void FJ() { ForwardJC(); }                          // FJ = ForwardJC
-void MS() { MotorStop(); }                          // MS = MotorStop
+/**************** MOVE ****************/
 
-// ----- เลี้ยว (Turn) -----
-// TL(), TR() - ใช้ความเร็ว TurnSpeed (ค่าเริ่มต้น)
-// TL(speed), TR(speed) - กำหนดความเร็วเอง
-void TL() { TurnLeft(); }                        // TL = TurnLeft (ใช้ TurnSpeed)
-void TL(int s) { TurnLeftSpeed(s); }             // TL(speed) = TurnLeftSpeed
-void TR() { TurnRight(); }                       // TR = TurnRight (ใช้ TurnSpeed)
-void TR(int s) { TurnRightSpeed(s); }            // TR(speed) = TurnRightSpeed
-void UTL() { UTurnLeft(); }                      // UTL = UTurnLeft (ใช้ TurnSpeed)
-void UTL(int s) { UTurnLeftSpeed(s); }           // UTL(speed) = UTurnLeftSpeed
-void UTR() { UTurnRight(); }                     // UTR = UTurnRight (ใช้ TurnSpeed)
-void UTR(int s) { UTurnRightSpeed(s); }          // UTR(speed) = UTurnRightSpeed
-void LT(int s, int t) { Left(s, t); }            // LT = Left(speed, time)
-void RT(int s, int t) { Right(s, t); }           // RT = Right(speed, time)
-void TLD(int s, int t) { TurnLeftDelay(s, t); }  // TLD = TurnLeftDelay(speed, time)
-void TRD(int s, int t) { TurnRightDelay(s, t); } // TRD = TurnRightDelay(speed, time)
-void CL(int s, int t) { CurveLeft(s, t); }       // CL = CurveLeft(speed, time)
-void CR(int s, int t) { CurveRight(s, t); }      // CR = CurveRight(speed, time)
+void FD(int s, int t) { ForwardSpeedTime(s, t); }
+void BK(int s, int t) { BackwardSpeedTime(s, t); }
+void MS() { AO(); }
 
-// ----- เลี้ยวใช้ IMU (Turn with IMU) -----
-void TLG(int s, float d) { TL_deg(s, d); }        // TLG = TurnLeftDegree(speed, degree, origin)
-void TRG(int s, float d) { TR_deg(s, d); }       // TRG = TurnRightDegree(speed, degree, origin)
-void SPD(int s, int d) { SpinDegree(s, d); }              // SPD = SpinDegree(speed, degree, pid)
-// void SPDB(int s, int d, int p) { SpinDegreeBack(s, d, p); }         // SPDB = SpinDegreeBack(speed, degree, pid)
+/**************** TURN ****************/
+
+void TL() { TurnLeft(); }
+void TL(int s, String se) { TurnLeftSpeed(s, se, 10); }
+void TR() { TurnRight(); }
+void TR(int s, String se) { TurnRightSpeed(s, se, 10); }
+
+void UTL() { UTurnLeft(); }
+void UTL(int s) { UTurnLeftSpeed(s); }
+void UTR() { UTurnRight(); }
+void UTR(int s) { UTurnRightSpeed(s); }
+
+void LT(int s, int t) { Left(s, t); }
+void RT(int s, int t) { Right(s, t); }
+void TLD(int s, int t) { TurnLeftDelay(s, t); }
+void TRD(int s, int t) { TurnRightDelay(s, t); }
+
+void CL(int s, int t) { CurveLeft(s, t); }
+void CR(int s, int t) { CurveRight(s, t); }
+
+/**************** IMU ****************/
+
+void TLG(int s, float d) { rotate_left(s, d, 10); }
+void TRG(int s, float d) { rotate_right(s, d, 10); }
+void SRI(int s, float d) { place_right_in(s, d, 10); }
+void SRO(int s, float d) { place_right_out(s, d, 10); }
+void SLI(int s, float d) { place_left_in(s, d, 10); }
+void SLO(int s, float d) { place_left_out(s, d, 10); }
+
+void SRI(int s, float d, int o) { place_right_in(s, d, o); }
+void SRO(int s, float d, int o) { place_right_out(s, d, o); }
+void SLI(int s, float d, int o) { place_left_in(s, d, o); }
+void SLO(int s, float d, int o) { place_left_out(s, d, o); }
+// void SPD(int s, int d) { SpinDegree(s, d); }
+
+/**************** SPEED ****************/
+
+void CS(int s, int a) { ChangeSpeed(s, a); }
 
 
-// ----- อื่นๆ (Others) -----
-void CS(int s, int a) { ChangeSpeed(s, a); } // CS = ChangeSpeed(speed, accSpeed)
+
+void TGST(int s, int t) {
+    arm_height(0);
+    delay(100);
+    // TracSpeedTime(s,s, 0.85, t);
+    TracSpeedTime(s, t, my);
+    // arm_up_close();
+    GC();
+    arm_height(5);
+}

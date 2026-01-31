@@ -158,7 +158,8 @@ void ForwardCM_Line(int speed, float cm) {
   float integral = 0;
   float prevError = 0;
 
-  while ((millis() - startTime) < targetMs) {
+  while ((millis() - startTime) < cm * 24)
+  {
     float lineError = error_A();
 
     integral += lineError;

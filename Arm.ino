@@ -119,13 +119,13 @@ void servo_smooth_dual(int ch1, int target1, int ch2, int target2, int spd) {
 
 void arm_height(int h) {
   if (h < 0) h = 0;
-  if (h > 5) h = 5;
-  servo_smooth(1, arm_height_pos[h], 5);
+  if (h > 6) h = 6;
+  servo_smooth(1, arm_height_pos[h], 10);
 }
 
 void arm_height(int h, int spd) {
   if (h < 0) h = 0;
-  if (h > 5) h = 5;
+  if (h > 6) h = 6;
   servo_smooth(1, arm_height_pos[h], spd);
 }
 
@@ -155,22 +155,29 @@ void arm_down(int spd) {
 // =============================================================================
 
 void gripper_open() {
-  servo_smooth_dual(10, servoL_open, 0, servoR_open, 5);
+  servo_smooth(0, servoR_open, 5);
+  delay(200);
+  // servo_smooth_dual(10, servoL_open, 0, servoR_open, 5);
   gripper_is_open = true;
 }
 
 void gripper_open(int spd) {
-  servo_smooth_dual(10, servoL_open, 0, servoR_open, spd);
+  servo_smooth(0, servoR_open, spd);
+
+  // servo_smooth_dual(10, servoL_open, 0, servoR_open, spd);
   gripper_is_open = true;
 }
 
 void gripper_close() {
-  servo_smooth_dual(10, servoL_close, 0, servoR_close, 5);
-  gripper_is_open = false;
+  servo(0, 5);
+  // servo_smooth(0, 7, 5);
+  // servo_smooth_dual(10, servoL_close, 0, servoR_close, 5);
+  // gripper_is_open = false;
 }
 
 void gripper_close(int spd) {
-  servo_smooth_dual(10, servoL_close, 0, servoR_close, spd);
+  servo_smooth(0, 5, spd);
+  // servo_smooth_dual(10, servoL_close, 0, servoR_close, spd);
   gripper_is_open = false;
 }
 
@@ -287,52 +294,66 @@ void arm_init_pos(int armPos, int leftPos, int rightPos) {
 
 void GO() { gripper_open(); }
 void GO(int spd) { gripper_open(spd); }
-void GC() { gripper_close(); }
+void GC() { gripper_close(); delay(200); }
 void GC(int spd) { gripper_close(spd); }
 
 // =============================================================================
 //  GGU - Gripper Go Up (ยกขึ้นระดับ 0-5)
 // =============================================================================
 
-void GGU() { arm_height(5); }        // ยกสุด
-void GGU(int spd) { arm_height(5, spd); }
-void GGU1() { arm_height(1); }
-void GGU1(int spd) { arm_height(1, spd); }
-void GGU2() { arm_height(2); }
-void GGU2(int spd) { arm_height(2, spd); }
-void GGU3() { arm_height(3); }
-void GGU3(int spd) { arm_height(3, spd); }
-void GGU4() { arm_height(4); }
-void GGU4(int spd) { arm_height(4, spd); }
-void GGU5() { arm_height(5); }
-void GGU5(int spd) { arm_height(5, spd); }
+void GGU() {
+  arm_height(0);
+  GC();
+  delay(200);
+  arm_height(5);
+} // ยกสุด
+// void GGU(int spd) { arm_height(5, spd); }
+void GGU1() { arm_height(1); GC(); delay(200); arm_height(5); }
+// void GGU1(int spd) { arm_height(1, spd); }
+void GGU2() { arm_height(2); GC(); delay(200); arm_height(5); }
+// void GGU2(int spd) { arm_height(2, spd); }
+void GGU3() { arm_height(3); GC(); delay(200); arm_height(5); }
+// void GGU3(int spd) { arm_height(3, spd); }
+void GGU4() { arm_height(4); GC(); delay(200); arm_height(5); }
+// void GGU4(int spd) { arm_height(4, spd); }
+void GGU5() { arm_height(5); GC(); delay(200); arm_height(6); }
+// void GGU5(int spd) { arm_height(5, spd); }
 
 // =============================================================================
 //  GGD - Gripper Go Down (ลงระดับ 0-5)
 // =============================================================================
 
 void GGD() { arm_height(0); }        // ลงสุด
-void GGD(int spd) { arm_height(0, spd); }
+// void GGD(int spd) { arm_height(0, spd); }
 void GGD1() { arm_height(1); }
-void GGD1(int spd) { arm_height(1, spd); }
+// void GGD1(int spd) { arm_height(1, spd); }
 void GGD2() { arm_height(2); }
-void GGD2(int spd) { arm_height(2, spd); }
+// void GGD2(int spd) { arm_height(2, spd); }
 void GGD3() { arm_height(3); }
-void GGD3(int spd) { arm_height(3, spd); }
+// void GGD3(int spd) { arm_height(3, spd); }
 void GGD4() { arm_height(4); }
-void GGD4(int spd) { arm_height(4, spd); }
+// void GGD4(int spd) { arm_height(4, spd); }
 void GGD5() { arm_height(5); }
-void GGD5(int spd) { arm_height(5, spd); }
+// void GGD5(int spd) { arm_height(5, spd); }
 
 // =============================================================================
 //  GDP - Gripper Drop Position (ลงไปวางของ)
 //  ลงไประดับที่กำหนด แล้วกางมือ
 // =============================================================================
 
-void GDP1() { arm_height(1); delay(100); gripper_open(); }
-void GDP2() { arm_height(2); delay(100); gripper_open(); }
-void GDP3() { arm_height(3); delay(100); gripper_open(); }
-void GDP4() { arm_height(4); delay(100); gripper_open(); }
+void GDP() { arm_height(0, 20); delay(300); gripper_open(); servo_smooth(1, arm_height_pos[6], 20); }
+void GDP1() { arm_height(1, 20); delay(300); gripper_open();
+  servo_smooth(1, arm_height_pos[6], 20);
+}
+void GDP2() { arm_height(2, 20); delay(300); gripper_open();
+  servo_smooth(1, arm_height_pos[6], 20);
+}
+void GDP3() { arm_height(3, 20); delay(300); gripper_open();
+  servo_smooth(1, arm_height_pos[6], 20);
+}
+void GDP4() { arm_height(4, 20); delay(300); gripper_open();
+  servo_smooth(1, arm_height_pos[6], 20);
+}
 
 void GDP1(int spd) { arm_height(1, spd); delay(100); gripper_open(spd); }
 void GDP2(int spd) { arm_height(2, spd); delay(100); gripper_open(spd); }
@@ -374,7 +395,7 @@ void arm_open_down() {  //--------->>  กางฝ่ามือออก  แ
 void arm_down_open() {  //--------->>  เอาแขนลง  และ กางฝ่ามือออก
   servo(1, servo_down);
   delay(300);
-  servo(10, servoL_open);
+  servo(10, 60);
   servo(0, servoR_open);
 }
 
@@ -386,21 +407,22 @@ void arm_open_up() {  //--------->>  กางฝ่ามือออก  แ�
 }
 
 void arm_up_open() {  //--------->>  เอาแขนขึ้น  และ กางฝ่ามือออก
-  servo(1, servo_down + 95);
+  servo(1, servo_up);
   delay(300);
-  servo(10, servoL_open);
+  // servo(10, servoL_open);
   servo(0, servoR_open);
 }
 
 void arm_down_close() {  //--------->>  เอาแขนลง  และ หุบมือเข้า
-  servo(1, servo_down);
-  delay(100);
-  servo(10, servoL_open - 115);
-  servo(0, servoR_open - 111);
+  servo(1, arm_height_pos[0]);
+  delay(300);
+  // servo(10, servoL_open - 80);
+  servo(0, 5);
+  delay(300);
 }
 
 void arm_up_close() {  //--------->>  ยกแขนขึ้น  และ หุบมือเข้า
-  servo(1, servo_down + 95);
+  servo(1, arm_height_pos[5]);
   delay(100);
   servo(10, servoL_open - 91);
   servo(0, servoR_open - 91);
